@@ -49,7 +49,28 @@ export default function Countries() {
   };
 
   useEffect(() => {
-    fetchCountries();
+    const fetchComCache = async () => {
+      const cacheKey = "countriesData";
+      const cache = sessionStorage.getItem(cacheKey);
+  
+      if (cache) {
+        setCountries(JSON.parse(cache));
+        setIsLoading(false); 
+        return;
+      }
+  
+      try {
+        const response = await axios.get("https://restcountries.com/v3.1/all");
+        setCountries(response.data);
+        sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
+      } catch (error) {
+        alert("Erro ao carregar países:", error);
+      } finally {
+        setIsLoading(false); 
+      }
+    };
+  
+    fetchComCache();
   }, []);
 
   const resetFilter = () => {

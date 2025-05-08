@@ -11,10 +11,9 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Simula um carregamento (exemplo: busca de dados)
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 2000); // 2 segundos de carregamento
+        }, 2000); 
         return () => clearTimeout(timer);
     }, []);
     
