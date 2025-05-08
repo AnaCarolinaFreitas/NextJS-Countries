@@ -11,16 +11,24 @@ import CountryModal from "../../components/CountryModal";
 import Loading from "../../components/Loading";
 import styles from "./Countries.module.css";
 
-import { Pagination } from 'antd';
-const App = () => <Pagination defaultCurrent={1} total={50} />;
+import { Pagination } from "antd";
 
-const regions = ["africa", "americas", "antarctic", "asia", "europe", "oceania"];
+const regions = [
+  "africa",
+  "americas",
+  "antarctic",
+  "asia",
+  "europe",
+  "oceania",
+];
 
 export default function Countries() {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [allCountries, setAllCountries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const fetchCountries = async (region = "") => {
     setIsLoading(true);
@@ -44,7 +52,15 @@ export default function Countries() {
     fetchCountries();
   }, []);
 
-  const resetFilter = () => fetchCountries();
+  const resetFilter = () => {
+    setCurrentPage(1);
+    fetchCountries();
+  };
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCountries = countries.slice(startIndex, endIndex);
+  
 
   const handleCardClick = (country) => {
     toast.info(`Você clicou no país: ${country.name.common}`, {});
@@ -52,18 +68,17 @@ export default function Countries() {
 
   return (
     <div className={styles.container}>
-            <ToastContainer
-            position="top-right"
-            autoClose={7500}
-            theme="light"
-            />
+      <ToastContainer position="top-right" autoClose={7500} theme="light" />
       <h1>Lista de Países do Mundo</h1>
       <div>
-        {regions.map((region) => (
+      {regions.map((region) => (
           <button
             key={region}
             className={styles.button}
-            onClick={() => fetchCountries(region)}
+            onClick={() => {
+              setCurrentPage(1);
+              fetchCountries(region);
+            }}
           >
             {region.charAt(0).toUpperCase() + region.slice(1)}
           </button>
@@ -74,19 +89,32 @@ export default function Countries() {
       </div>
 
       <div className={styles.cardContainer}>
-  {isLoading ? (
-    <Loading />
-  ) : (
-    countries.map((country, index) => (
-      <CountryCard
-        key={index}
-        country={country}
-        onClick={() => setSelectedCountry(country)} // Define o país selecionado
-        onCardClick={handleCardClick} // Exibe o toast
+        {isLoading ? (
+          <Loading />
+        ) : (
+          currentCountries.map((country, index) => (
+            <CountryCard
+              key={index}
+              country={country}
+              onClick={() => setSelectedCountry(country)}
+              onCardClick={handleCardClick}
+            />
+          ))
+        )}
+      </div>
+
+      {!isLoading && (
+        <Pagination
+        current={currentPage}
+        pageSize={itemsPerPage}
+        total={countries.length}
+        onChange={(page) => setCurrentPage(page)}
+        className={styles.pagination}
+        showSizeChanger={false}
+        hideOnSinglePage={true}
+        style={{ marginTop: "20px" }}
       />
-    ))
-  )}
-</div>
+      )}
 
       {selectedCountry && (
         <CountryModal
