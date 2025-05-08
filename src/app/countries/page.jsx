@@ -3,10 +3,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import CountryCard from "../../components/CountryCard";
 import CountryModal from "../../components/CountryModal";
 import Loading from "../../components/Loading";
 import styles from "./Countries.module.css";
+
+import { Pagination } from 'antd';
+const App = () => <Pagination defaultCurrent={1} total={50} />;
 
 const regions = ["africa", "americas", "antarctic", "asia", "europe", "oceania"];
 
@@ -40,8 +46,17 @@ export default function Countries() {
 
   const resetFilter = () => fetchCountries();
 
+  const handleCardClick = (country) => {
+    toast.info(`Você clicou no país: ${country.name.common}`, {});
+  };
+
   return (
     <div className={styles.container}>
+            <ToastContainer
+            position="top-right"
+            autoClose={7500}
+            theme="light"
+            />
       <h1>Lista de Países do Mundo</h1>
       <div>
         {regions.map((region) => (
@@ -59,18 +74,19 @@ export default function Countries() {
       </div>
 
       <div className={styles.cardContainer}>
-        {isLoading ? (
-          <Loading />
-        ) : (
-          countries.map((country, index) => (
-            <CountryCard
-              key={index}
-              country={country}
-              onClick={() => setSelectedCountry(country)}
-            />
-          ))
-        )}
-      </div>
+  {isLoading ? (
+    <Loading />
+  ) : (
+    countries.map((country, index) => (
+      <CountryCard
+        key={index}
+        country={country}
+        onClick={() => setSelectedCountry(country)} // Define o país selecionado
+        onCardClick={handleCardClick} // Exibe o toast
+      />
+    ))
+  )}
+</div>
 
       {selectedCountry && (
         <CountryModal
