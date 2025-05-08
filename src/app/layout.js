@@ -1,5 +1,12 @@
 import React from "react";
 import "./globals.css";
+import { Roboto } from "next/font/google";
+
+const font = Roboto ({
+    variable: "--font",
+    subsets: ["latin"],
+  });
+  
 
 export const metadata = {
     title: "Frontend",
@@ -13,7 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html>
-            <body>{children}</body>
+            <body className={font.variable}>{children}</body>
         </html>
     );
 }
